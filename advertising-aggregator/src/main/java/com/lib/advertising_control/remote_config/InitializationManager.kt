@@ -5,7 +5,7 @@ import com.applovin.sdk.AppLovinSdk
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.RequestConfiguration
 
-class InitializationManager {
+public class InitializationManager {
 
     fun initAd(context: Context, list: List<String>) {
         MobileAds.initialize(context) {

@@ -11,7 +11,7 @@ import com.lib.advertising_control.remote_config.managers.none.NoneShowManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 
-class AdShowManager(private val activity: Activity) {
+public class AdShowManager(private val activity: Activity) {
 
     private var interstitialShowManager: InterstitialShowManager = NoneShowManager()
 

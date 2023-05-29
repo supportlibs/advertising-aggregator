@@ -14,7 +14,7 @@ import com.lib.advertising_control.remote_config.model.RequestState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 
-class BannerManager(
+public class BannerManager(
     private val activity: Activity,
     private val scope: CoroutineScope,
     private val bannerContainer: ViewGroup

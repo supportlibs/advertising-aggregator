@@ -18,20 +18,6 @@ android {
         buildConfigField "String", "ADMOB_TEST_BANNER", "\"ca-app-pub-3940256099942544/6300978111\""
     }
 
-    buildFeatures {
-        viewBinding true
-        dataBinding true
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildConfigField "String", "ADMOB_TEST_INTERSTTIAL", "\"ca-app-pub-3940256099942544/1033173712\""
-            buildConfigField "String", "ADMOB_TEST_BANNER", "\"ca-app-pub-3940256099942544/6300978111\""
-        }
-    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -43,15 +29,15 @@ android {
     buildTypes {
         release {
             debuggable false
-            minifyEnabled true
+//            minifyEnabled true
 
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         debug {
             debuggable true
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+//            minifyEnabled false
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 

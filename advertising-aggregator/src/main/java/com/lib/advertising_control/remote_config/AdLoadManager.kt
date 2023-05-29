@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
 
-class AdLoadManager(
+public class AdLoadManager(
     private val activity: Activity,
     private val adBlock: String
 ) {
