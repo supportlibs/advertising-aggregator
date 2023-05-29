@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<defaultsMap>
+    <entry>
+        <key>analyze_block</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>optimize_block_battery</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>optimize_block_cpu</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>optimize_block_junk</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>optimize_block_ram</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>splash_block</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+    <entry>
+        <key>banner_block</key>
+        <value>{ "ads_provider": "none", "isTestAd":"false", "id": "" }</value>
+    </entry>
+</defaultsMap>
