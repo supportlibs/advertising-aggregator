@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 class AdmobBannerManager(
     private val activity: Activity,
     private val containerView: ViewGroup,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val isTest: Boolean
 ) : BaseBannerManager() {
 
     private val TAG = this.javaClass.simpleName
@@ -84,7 +85,7 @@ class AdmobBannerManager(
     }
 
     private fun getAdmobProdIdOrTestId(configAdModel: ConfigAdModel): String {
-        return if (configAdModel.isTest || BuildConfig.BUILD_TYPE.contains("debug", true))
+        return if (configAdModel.isTest || BuildConfig.BUILD_TYPE.contains("debug", true) || isTest)
             BuildConfig.ADMOB_TEST_BANNER
         else
             configAdModel.id

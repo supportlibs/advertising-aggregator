@@ -23,7 +23,7 @@ public class BannerManager(
     private val remoteConfigManager: AdRemoteConfigManager = AdRemoteConfigManager()
     private var bannerProviderManager: BaseBannerManager = NoneBannerManager()
 
-    suspend fun initBanner(adBlock: String) {
+    suspend fun initBanner(adBlock: String, isTestAdmob: Boolean = false) {
         remoteConfigManager.loadInfoFromRemoteConfig().collect { remoteConfigLoadStatus ->
             if (remoteConfigLoadStatus == FETCH_COMPLETED) {
                 when (val config = remoteConfigManager.getAdRequest(adBlock)) {
@@ -31,7 +31,7 @@ public class BannerManager(
                     is RequestState.Success -> {
                         for (adModel in config.data.sortedBy { it.priority }) {
                             when (adModel.adsProvider) {
-                                AdType.ADMOB -> initAdmob()
+                                AdType.ADMOB -> initAdmob(isTestAdmob)
                                 AdType.FACEBOOK -> initFacebook()
                                 AdType.APPLOVIN -> initApplovin()
                                 AdType.NONE -> {}
@@ -54,8 +54,8 @@ public class BannerManager(
 
     fun destroyBanner() = bannerProviderManager.destroyBanner()
 
-    private fun initAdmob() {
-        bannerProviderManager = AdmobBannerManager(activity, bannerContainer, scope)
+    private fun initAdmob(isTest: Boolean) {
+        bannerProviderManager = AdmobBannerManager(activity, bannerContainer, scope, isTest)
     }
 
     private fun initFacebook() {
