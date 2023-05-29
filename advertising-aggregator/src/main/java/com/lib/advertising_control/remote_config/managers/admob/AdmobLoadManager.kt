@@ -17,7 +17,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class AdmobLoadManager(
-    private val context: Context
+    private val context: Context,
+    private val isTestAd: Boolean
 ) : InterstitialLoadManager() {
 
     override suspend fun loadInterstitial(
@@ -52,7 +53,7 @@ class AdmobLoadManager(
     }
 
     private fun getAdmobProdIdOrTestId(configAdModel: ConfigAdModel): String {
-        return if (configAdModel.isTest || BuildConfig.DEBUG)
+        return if (configAdModel.isTest || BuildConfig.DEBUG || isTestAd)
             BuildConfig.ADMOB_TEST_INTERSTTIAL
         else
             configAdModel.id
