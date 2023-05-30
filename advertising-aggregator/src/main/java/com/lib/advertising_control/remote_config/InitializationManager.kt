@@ -7,13 +7,16 @@ import com.google.android.gms.ads.RequestConfiguration
 
 public class InitializationManager {
 
-    fun initAd(context: Context, list: List<String>) {
+    fun initAdmob(context: Context, list: List<String>) {
         MobileAds.initialize(context) {
             it.adapterStatusMap.forEach {
             }
         }
         RequestConfiguration.Builder().setTestDeviceIds(list)
 
+    }
+
+    fun initApplovin(context: Context) {
         AppLovinSdk.getInstance(context).apply {
             mediationProvider = "max"
             initializeSdk()
