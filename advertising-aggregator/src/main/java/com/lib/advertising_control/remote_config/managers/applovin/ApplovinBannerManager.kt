@@ -28,7 +28,7 @@ class ApplovinBannerManager(
     private val TAG = this::class.java.simpleName
 
     private lateinit var adView: MaxAdView
-    private lateinit var timeoutJob: Job
+//    private lateinit var timeoutJob: Job
 
         override suspend fun initBanner(adModel: ConfigAdModel): BannerState {
         adView = MaxAdView(adModel.id, activity)
@@ -56,7 +56,7 @@ class ApplovinBannerManager(
     inner class ApplovinAdListener : MaxAdViewAdListener {
         override fun onAdLoaded(p0: MaxAd?) {
             Log.d(TAG, "onAdLoaded: ")
-            timeoutJob.cancel()
+//            timeoutJob.cancel()
             bannerContainer.apply {
                 if (childCount == 0) addView(adView)
             }
