@@ -42,7 +42,7 @@ class ApplovinBannerManager(
         adView.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.darker_gray))
 
         adView.loadAd()
-        timeoutJob = scope.launch {
+        timeoutJob = scope.launch(Dispatchers.IO) {
             delay(30000)
             bannerStateFlow.emit(FAILED)
         }

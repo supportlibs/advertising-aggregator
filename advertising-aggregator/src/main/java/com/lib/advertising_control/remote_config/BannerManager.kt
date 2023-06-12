@@ -34,7 +34,7 @@ public class BannerManager(
                                 AdType.ADMOB -> initAdmob(isTestAdmob)
                                 AdType.FACEBOOK -> initFacebook()
                                 AdType.APPLOVIN -> initApplovin()
-                                AdType.NONE -> {}
+                                AdType.NONE -> initNone()
                             }
                             if (bannerProviderManager.initBanner(adModel) == BannerState.LOADED) {
                                 break
@@ -65,4 +65,10 @@ public class BannerManager(
     private fun initApplovin() {
         bannerProviderManager = ApplovinBannerManager(activity, bannerContainer, scope)
     }
+
+    private fun initNone() {
+        bannerProviderManager = NoneBannerManager()
+    }
+
+
 }
