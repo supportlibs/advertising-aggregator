@@ -1,6 +1,7 @@
 package com.lib.advertising_control.remote_config.managers.applovin
 
 import android.app.Activity
+import android.util.Log
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
@@ -24,6 +25,8 @@ class ApplovinBannerManager(
     private val scope: CoroutineScope
 ) : BaseBannerManager() {
 
+    private val TAG = this::class.java.simpleName
+
     private lateinit var adView: MaxAdView
     private lateinit var timeoutJob: Job
 
@@ -42,16 +45,17 @@ class ApplovinBannerManager(
         adView.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.darker_gray))
 
         adView.loadAd()
-        timeoutJob = scope.launch(Dispatchers.IO) {
-            delay(30000)
-            bannerStateFlow.emit(FAILED)
-        }
+//        timeoutJob = scope.launch(Dispatchers.IO) {
+//            delay(30000)
+//            bannerStateFlow.emit(FAILED)
+//        }
 
         return bannerStateFlow.first()
     }
 
     inner class ApplovinAdListener : MaxAdViewAdListener {
         override fun onAdLoaded(p0: MaxAd?) {
+            Log.d(TAG, "onAdLoaded: ")
             timeoutJob.cancel()
             bannerContainer.apply {
                 if (childCount == 0) addView(adView)
@@ -61,19 +65,27 @@ class ApplovinBannerManager(
             }
         }
 
-        override fun onAdDisplayed(p0: MaxAd?) {}
+        override fun onAdDisplayed(p0: MaxAd?) {
+            Log.d(TAG, "onAdDisplayed: ")
+        }
 
-        override fun onAdHidden(p0: MaxAd?) {}
+        override fun onAdHidden(p0: MaxAd?) {
+            Log.d(TAG, "onAdHidden: ")
+        }
 
-        override fun onAdClicked(p0: MaxAd?) {}
+        override fun onAdClicked(p0: MaxAd?) {
+            Log.d(TAG, "onAdClicked: ")
+        }
 
         override fun onAdLoadFailed(p0: String?, p1: MaxError?) {
+            Log.d(TAG, "onAdLoadFailed: ${p1?.message}")
             if (scope.isActive) scope.launch {
                 bannerStateFlow.emit(FAILED)
             }
         }
 
         override fun onAdDisplayFailed(p0: MaxAd?, p1: MaxError?) {
+            Log.d(TAG, "onAdDisplayFailed: ${p1?.message}")
             if (scope.isActive) scope.launch {
                 bannerStateFlow.emit(FAILED)
             }
