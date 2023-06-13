@@ -28,10 +28,10 @@ class ApplovinBannerManager(
     private val TAG = this::class.java.simpleName
 
     private lateinit var adView: MaxAdView
-//    private lateinit var timeoutJob: Job
 
-        override suspend fun initBanner(adModel: ConfigAdModel): BannerState {
-        adView = MaxAdView(adModel.id, activity)
+    override suspend fun initBanner(adModel: ConfigAdModel): BannerState {
+        
+        adView = MaxAdView(adModel.id.ifEmpty { "empty" }, activity)
         adView.setListener(ApplovinAdListener())
 
         val width = ViewGroup.LayoutParams.MATCH_PARENT
@@ -45,10 +45,6 @@ class ApplovinBannerManager(
         adView.setBackgroundColor(ContextCompat.getColor(activity, android.R.color.darker_gray))
 
         adView.loadAd()
-//        timeoutJob = scope.launch(Dispatchers.IO) {
-//            delay(30000)
-//            bannerStateFlow.emit(FAILED)
-//        }
 
         return bannerStateFlow.first()
     }
@@ -56,7 +52,6 @@ class ApplovinBannerManager(
     inner class ApplovinAdListener : MaxAdViewAdListener {
         override fun onAdLoaded(p0: MaxAd?) {
             Log.d(TAG, "onAdLoaded: ")
-//            timeoutJob.cancel()
             bannerContainer.apply {
                 if (childCount == 0) addView(adView)
             }

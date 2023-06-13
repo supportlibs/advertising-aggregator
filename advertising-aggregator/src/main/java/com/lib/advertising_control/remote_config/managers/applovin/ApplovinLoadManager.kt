@@ -21,15 +21,11 @@ class ApplovinLoadManager(
 
     override suspend fun loadInterstitial(adModel: ConfigAdModel, scope: CoroutineScope): BaseAdObject {
         val flow = MutableSharedFlow<BaseAdObject>()
-        val interstitialAd = MaxInterstitialAd(adModel.id, activity)
-        val timeoutJob = scope.launch {
-            delay(29000)
-            flow.emit(BaseAdObject.Error("Timeout"))
-        }
+        val interstitialAd = MaxInterstitialAd(adModel.id.ifEmpty { "empty" }, activity)
+
         val callback = object : MaxAdListener {
             override fun onAdLoaded(p0: MaxAd?) {
                 if (scope.isActive) scope.launch {
-                    timeoutJob.cancel()
                     flow.emit(BaseAdObject.ApplovinAdObject(interstitialAd))
                 }
             }
