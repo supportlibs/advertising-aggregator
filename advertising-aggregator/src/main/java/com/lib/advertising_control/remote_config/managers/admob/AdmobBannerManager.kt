@@ -36,7 +36,6 @@ class AdmobBannerManager(
         adView.adUnitId = getAdmobProdIdOrTestId(adModel)
         adView.adListener = AdmobBannerListener()
 
-        containerView.addView(adView)
 
         val adRequest = AdRequest.Builder()
             .setHttpTimeoutMillis(29000)
@@ -69,6 +68,7 @@ class AdmobBannerManager(
             super.onAdLoaded()
             Log.d(TAG, "The banner was successfully loaded.")
             adView.visibility = View.VISIBLE
+            containerView.addView(adView)
             if (scope.isActive) scope.launch {
                 bannerStateFlow.emit(LOADED)
             }
