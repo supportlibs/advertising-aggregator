@@ -17,24 +17,24 @@ class ApplovinShowManager(
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun showInterstitial() = callbackFlow {
         applovinAd.setListener(object : MaxAdListener {
-            override fun onAdLoaded(p0: MaxAd?) {
+            override fun onAdLoaded(p0: MaxAd) {
             }
 
-            override fun onAdDisplayed(p0: MaxAd?) {
+            override fun onAdDisplayed(p0: MaxAd) {
                 trySend(InterstitialShowState.SHOWED)
             }
 
-            override fun onAdHidden(p0: MaxAd?) {
+            override fun onAdHidden(p0: MaxAd) {
                 trySend(InterstitialShowState.DISMISSED)
             }
 
-            override fun onAdClicked(p0: MaxAd?) {
+            override fun onAdClicked(p0: MaxAd) {
             }
 
-            override fun onAdLoadFailed(p0: String?, p1: MaxError?) {
+            override fun onAdLoadFailed(p0: String, p1: MaxError) {
             }
 
-            override fun onAdDisplayFailed(p0: MaxAd?, p1: MaxError?) {
+            override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
                 trySend(InterstitialShowState.FAILED_TO_SHOW)
             }
         })
