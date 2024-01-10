@@ -10,6 +10,7 @@ import com.lib.advertising_control.remote_config.model.AdType.ADMOB
 import com.lib.advertising_control.remote_config.model.AdType.APPLOVIN
 import com.lib.advertising_control.remote_config.model.ConfigAdModel
 import com.lib.advertising_control.remote_config.model.InterstitialLoadState.*
+import com.lib.advertising_control.remote_config.model.RemoteConfigFetchStatus
 import com.lib.advertising_control.remote_config.model.RemoteConfigFetchStatus.FETCH_COMPLETED
 import com.lib.advertising_control.remote_config.model.RequestState
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +32,6 @@ public class AdLoadManager(
                 when (val config = remoteConfigManager.getAdRequest(adBlock)) {
                     is RequestState.Error -> { error("Failed to get data") }
                     is RequestState.Success -> {
-                        emit(Loading())
                         for (adModel in config.data.sortedBy { it.priority }) {
                             interstitialLoadManager = when(adModel.adsProvider) {
                                 ADMOB -> AdmobLoadManager(activity, isTestAdmob)
@@ -39,12 +39,15 @@ public class AdLoadManager(
                                 else -> NoneLoadManager()
                             }
                             try {
-                                emit(Success(loadAdForAvailableAdProviderFlow(adModel,scope).single()))
-                                break
+                                val loadResult =
+                                    loadAdForAvailableAdProviderFlow(adModel, scope).single()
+                                emit(Success(loadResult))
+                                return@collect
                             } catch (e: Exception) {
                                 continue
                             }
                         }
+                        emit(Completed())
                     }
                 }
             } else {
