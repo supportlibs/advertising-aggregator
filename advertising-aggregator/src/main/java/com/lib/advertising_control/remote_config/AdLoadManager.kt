@@ -27,6 +27,7 @@ public class AdLoadManager(
     private var interstitialLoadManager: InterstitialLoadManager = NoneLoadManager()
 
     fun loadAdFlow(scope: CoroutineScope, isTestAdmob: Boolean = false) = flow {
+        emit(Loading())
         remoteConfigManager.loadInfoFromRemoteConfig().collect { remoteConfigLoadStatus ->
             if (remoteConfigLoadStatus == FETCH_COMPLETED) {
                 when (val config = remoteConfigManager.getAdRequest(adBlock)) {
