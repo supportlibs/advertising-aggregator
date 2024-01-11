@@ -10,10 +10,8 @@ import com.lib.advertising_control.remote_config.model.AdType.ADMOB
 import com.lib.advertising_control.remote_config.model.AdType.APPLOVIN
 import com.lib.advertising_control.remote_config.model.ConfigAdModel
 import com.lib.advertising_control.remote_config.model.InterstitialLoadState.*
-import com.lib.advertising_control.remote_config.model.RemoteConfigFetchStatus
 import com.lib.advertising_control.remote_config.model.RemoteConfigFetchStatus.FETCH_COMPLETED
 import com.lib.advertising_control.remote_config.model.RequestState
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.single
@@ -26,7 +24,7 @@ public class AdLoadManager(
     private val remoteConfigManager: AdRemoteConfigManager = AdRemoteConfigManager()
     private var interstitialLoadManager: InterstitialLoadManager = NoneLoadManager()
 
-    fun loadAdFlow(scope: CoroutineScope, isTestAdmob: Boolean = false) = flow {
+    fun loadAdFlow(isTestAdmob: Boolean = false) = flow {
         emit(Loading())
         remoteConfigManager.loadInfoFromRemoteConfig().collect { remoteConfigLoadStatus ->
             if (remoteConfigLoadStatus == FETCH_COMPLETED) {
@@ -41,7 +39,7 @@ public class AdLoadManager(
                             }
                             try {
                                 val loadResult =
-                                    loadAdForAvailableAdProviderFlow(adModel, scope).single()
+                                    loadAdForAvailableAdProviderFlow(adModel).single()
                                 emit(Success(loadResult))
                                 return@collect
                             } catch (e: Exception) {
@@ -58,12 +56,13 @@ public class AdLoadManager(
     }
 
     private fun loadAdForAvailableAdProviderFlow(
-        adModel: ConfigAdModel,
-        scope: CoroutineScope
+        adModel: ConfigAdModel
     ) = flow {
-        when (val result = interstitialLoadManager.loadInterstitial(adModel, scope)) {
-            is BaseAdObject.Error -> error("Ad failed to load. Go next")
-            else -> emit(result)
+        interstitialLoadManager.loadInterstitial(adModel).collect {
+            when (it) {
+                is BaseAdObject.Error -> error("Ad failed to load. Go next")
+                else -> emit(it)
+            }
         }
     }
 

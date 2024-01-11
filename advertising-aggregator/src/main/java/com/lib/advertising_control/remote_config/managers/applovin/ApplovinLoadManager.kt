@@ -8,49 +8,44 @@ import com.applovin.mediation.ads.MaxInterstitialAd
 import com.lib.advertising_control.remote_config.managers.base.BaseAdObject
 import com.lib.advertising_control.remote_config.managers.base.InterstitialLoadManager
 import com.lib.advertising_control.remote_config.model.ConfigAdModel
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.callbackFlow
 
 class ApplovinLoadManager(
     private val activity: Activity
 ) : InterstitialLoadManager() {
 
-    override suspend fun loadInterstitial(adModel: ConfigAdModel, scope: CoroutineScope): BaseAdObject {
-        val flow = MutableSharedFlow<BaseAdObject>()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun loadInterstitial(adModel: ConfigAdModel) = callbackFlow {
+
         val interstitialAd = MaxInterstitialAd(adModel.id.ifEmpty { "empty" }, activity)
 
-        val callback = object : MaxAdListener {
+        interstitialAd.setListener(object : MaxAdListener {
             override fun onAdLoaded(p0: MaxAd) {
-                if (scope.isActive) scope.launch {
-                    flow.emit(BaseAdObject.ApplovinAdObject(interstitialAd))
-                }
+                trySend(BaseAdObject.ApplovinAdObject(interstitialAd))
+                channel.close()
             }
 
-            override fun onAdLoadFailed(p0: String, p1: MaxError) {
-                if (scope.isActive) scope.launch {
-                    flow.emit(BaseAdObject.Error("Applovin ad failed to load"))
-                }
+            override fun onAdLoadFailed(p0: String, maxError: MaxError) {
+                trySend(BaseAdObject.Error("${maxError.code} : ${maxError.message}"))
+                channel.close()
             }
 
-            override fun onAdDisplayFailed(p0: MaxAd, p1: MaxError) {
-                if (scope.isActive) scope.launch {
-                    flow.emit(BaseAdObject.Error("Applovin ad display failed"))
-                }
-            }
+            override fun onAdDisplayFailed(p0: MaxAd, maxError: MaxError) { }
+            override fun onAdDisplayed(p0: MaxAd) { }
+            override fun onAdHidden(p0: MaxAd) { }
+            override fun onAdClicked(p0: MaxAd) { }
+        })
 
-            override fun onAdDisplayed(p0: MaxAd) {}
-            override fun onAdHidden(p0: MaxAd) {}
-            override fun onAdClicked(p0: MaxAd) {}
-        }
-
-        interstitialAd.setListener(callback)
         interstitialAd.loadAd()
 
-        return flow.first()
+        delay(16 * 1000)
+        trySend(BaseAdObject.Error("Timeout while loading Applovin ad"))
+        channel.close()
+        interstitialAd.destroy()
+        awaitClose { }
     }
 
 }

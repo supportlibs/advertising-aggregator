@@ -10,46 +10,41 @@ import com.lib.advertising_control.BuildConfig
 import com.lib.advertising_control.remote_config.managers.base.BaseAdObject
 import com.lib.advertising_control.remote_config.managers.base.InterstitialLoadManager
 import com.lib.advertising_control.remote_config.model.ConfigAdModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
 
 class AdmobLoadManager(
     private val context: Context,
     private val isTestAd: Boolean
 ) : InterstitialLoadManager() {
 
-    override suspend fun loadInterstitial(
-        adModel: ConfigAdModel,
-        scope: CoroutineScope
-    ): BaseAdObject {
-        val flow = MutableSharedFlow<BaseAdObject>()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun loadInterstitial(
+        adModel: ConfigAdModel
+    ) = callbackFlow {
+
         val callback = object : InterstitialAdLoadCallback() {
             override fun onAdFailedToLoad(adError: LoadAdError) {
                 super.onAdFailedToLoad(adError)
-                if (scope.isActive) scope.launch {
-                    flow.emit(BaseAdObject.Error("Admob ad failed to load"))
-                }
+                trySend(BaseAdObject.Error("${adError.code} : ${adError.message}"))
+                channel.close()
             }
 
             override fun onAdLoaded(interstitialAd: InterstitialAd) {
                 super.onAdLoaded(interstitialAd)
-                if (scope.isActive) scope.launch {
-                    flow.emit(BaseAdObject.AdmobAdObject(interstitialAd))
-                }
+                trySend(BaseAdObject.AdmobAdObject(interstitialAd))
+                channel.close()
             }
         }
 
         AdManagerInterstitialAd.load(
             context,
             getAdmobProdIdOrTestId(adModel),
-            AdRequest.Builder().setHttpTimeoutMillis(29000).build(),
+            AdRequest.Builder().setHttpTimeoutMillis(16000).build(),
             callback
         )
-
-        return flow.first()
+        awaitClose { }
     }
 
     private fun getAdmobProdIdOrTestId(configAdModel: ConfigAdModel): String {
@@ -58,5 +53,4 @@ class AdmobLoadManager(
         else
             configAdModel.id
     }
-
 }
